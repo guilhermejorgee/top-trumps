@@ -11,14 +11,6 @@ data class MatchEntity(
     @Column(name = "ID")
     val id: String = "",
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "MATCH_PLAYERS",
-        joinColumns = [JoinColumn(name = "MATCH_ID")],
-        inverseJoinColumns = [JoinColumn(name = "PLAYER_ID")]
-    )
-    val players: Set<PlayerEntity> = setOf(),
-
     @Column(name = "DECK_ID")
     val deckId: String,
 
@@ -33,5 +25,13 @@ data class MatchEntity(
     val roomId: String,
 
     @Column(name = "WINNER")
-    var winner: String? = null
+    var winner: String? = null,
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
+    @JoinTable(
+        name = "MATCH_PLAYERS",
+        joinColumns = [JoinColumn(name = "MATCH_ID")],
+        inverseJoinColumns = [JoinColumn(name = "PLAYER_ID")]
+    )
+    val players: Set<PlayerEntity>
 )

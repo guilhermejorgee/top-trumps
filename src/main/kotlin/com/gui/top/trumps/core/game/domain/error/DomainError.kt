@@ -8,5 +8,6 @@ sealed class DomainError(
     data object FullRoom : DomainError("The room is already full.")
     data object RoomNotReady : DomainError("The room is not ready to start the match.")
     data object MatchNotExists : DomainError("The match does not exist in the room.")
-    data object PlayerWithoutCard : DomainError("The match has players without cards.")
+    data object UnableDetermineWinner : DomainError("Unable to determine a winner.")
+    data object UnableNextRound : DomainError("Unable to advance to the next round.")
 }

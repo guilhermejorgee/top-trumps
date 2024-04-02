@@ -6,7 +6,6 @@ import com.gui.top.trumps.core.game.infrastructure.entities.DeckEntity
 import com.gui.top.trumps.core.game.domain.Deck
 import com.gui.top.trumps.core.game.infrastructure.mapper.DeckMapper
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -14,7 +13,7 @@ import java.util.*
 @Repository
 class DeckRepositoryImpl(
     private val repositoryJpa: DeckSpringRepository,
-    private val repositoryMongoDb: MongoDbRepository
+    private val repositoryMongoDb: DeckMongoDbRepository
 ): DeckRepository{
 
     override fun findById(id: String): Optional<Deck> {
@@ -42,8 +41,8 @@ class DeckRepositoryImpl(
 
 
 
-interface MongoDbRepository : MongoRepository<CardEntity, String> {
+interface DeckMongoDbRepository : MongoRepository<CardEntity, String> {
     fun findByDeckId(deckId: String): Set<CardEntity>
 }
 
-interface DeckSpringRepository : JpaRepository<DeckEntity, String>, JpaSpecificationExecutor<DeckEntity> {}
+interface DeckSpringRepository : JpaRepository<DeckEntity, String> {}

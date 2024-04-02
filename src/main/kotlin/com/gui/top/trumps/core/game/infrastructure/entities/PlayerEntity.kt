@@ -1,18 +1,19 @@
 package com.gui.top.trumps.core.game.infrastructure.entities
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import com.gui.top.trumps.core.game.infrastructure.converter.StringListConverter
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "PLAYERS")
 data class PlayerEntity(
 
     @Id
-    @Column(name = "ID")
     val id: String,
-
     @Column(name = "NAME")
-    val name: String
+    val name: String,
+    @Column(name = "MATCH_ID")
+    val matchId: String,
+    @Convert(converter = StringListConverter::class)
+    @Column(name = "CARDS")
+    val cardsId: List<String>
 )

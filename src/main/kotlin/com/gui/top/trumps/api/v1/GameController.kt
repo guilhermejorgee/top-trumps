@@ -1,10 +1,13 @@
 package com.gui.top.trumps.api.v1
 
 import arrow.core.getOrElse
+import com.gui.top.trumps.api.v1.request.CreateUserRequest
 import com.gui.top.trumps.api.v1.request.RoomAccessRequest
 import com.gui.top.trumps.api.v1.request.RoomCreateRequest
 import com.gui.top.trumps.api.v1.response.RoomCreateResponse
+import com.gui.top.trumps.api.v1.response.UserCreateResponse
 import com.gui.top.trumps.core.game.application.RoomService
+import com.gui.top.trumps.core.game.application.UserService
 import com.gui.top.trumps.core.game.application.error.ApplicationError
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,16 +18,29 @@ import java.net.URI
 @RestController
 @RequestMapping("/top-trumps/v1")
 class GameController(
-    val roomService: RoomService
+    private val roomService: RoomService,
+    private val userService: UserService
 ) {
 
-    @PostMapping("/room")
+    @PostMapping("/users")
+    fun createUser(@RequestBody request: CreateUserRequest): ResponseEntity<UserCreateResponse>{
+        val user = userService.createUser(request.name)
+            .getOrElse {
+                return responseError(it)
+            }
+
+        val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.id).toUri()
+
+        return ResponseEntity.created(uri).body(UserCreateResponse(user.id, user.name))
+    }
+
+    @PostMapping("/rooms")
     fun createRoom(@RequestBody request: RoomCreateRequest): ResponseEntity<RoomCreateResponse>{
         val room = roomService.createRoom(request.playerId, request.slots).getOrElse {
             return responseError(it)
         }
         val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(room.id).toUri()
-        return ResponseEntity.created(uri).body(RoomCreateResponse(room.id, room.pass, room.slots) )
+        return ResponseEntity.created(uri).body(RoomCreateResponse(room.id, room.pass, room.slots))
     }
 
     @PatchMapping("/rooms/{roomPass}/access")

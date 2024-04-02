@@ -1,6 +1,6 @@
 package com.gui.top.trumps.core.game.application.repository
 
-import com.gui.top.trumps.game.domain.Room
+import com.gui.top.trumps.core.game.domain.Room
 import java.util.*
 
 interface RoomRepository {

@@ -1,4 +1,4 @@
-package com.gui.top.trumps.game.domain.events
+package com.gui.top.trumps.core.game.domain.events
 
 import com.gui.top.trumps.core.common.domain.Event
 import java.util.*

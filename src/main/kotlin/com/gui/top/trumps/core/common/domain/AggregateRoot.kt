@@ -2,7 +2,7 @@ package com.gui.top.trumps.core.common.domain
 
 abstract class AggregateRoot {
 
-    val events: MutableSet<Event> = mutableSetOf()
+    private val events: MutableList<Event> = mutableListOf()
 
     fun addEvents(event: Event){
         this.events.add(event)

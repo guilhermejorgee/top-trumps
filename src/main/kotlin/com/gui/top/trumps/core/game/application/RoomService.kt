@@ -4,26 +4,26 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import com.gui.top.trumps.core.common.application.Loggable
 import com.gui.top.trumps.core.game.application.error.ApplicationError
-import com.gui.top.trumps.core.game.application.repository.PlayerRepository
 import com.gui.top.trumps.core.game.application.repository.RoomRepository
-import com.gui.top.trumps.game.domain.Room
+import com.gui.top.trumps.core.game.application.repository.UserRepository
+import com.gui.top.trumps.core.game.domain.Room
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class RoomService(
-    val roomRepository: RoomRepository,
-    val playerRepository: PlayerRepository
+    private val roomRepository: RoomRepository,
+    private val userRepository: UserRepository
 ): Loggable {
 
     @Transactional
-    fun createRoom(playerId: String, slots: Int): Either<ApplicationError, Room>{
-        val playerOptional = playerRepository.findById(playerId);
-        if(playerOptional.isEmpty){
+    fun createRoom(userId: String, slots: Int): Either<ApplicationError, Room>{
+        val userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty){
             logger.info("Entity Not Found")
             return Either.Left(ApplicationError.EntityNotFound)
         }
-        val player = playerOptional.get()
+        val player = userOptional.get()
 
         val room = player.initRoom(slots).getOrElse {
             logger.error(it.message)
@@ -36,9 +36,9 @@ class RoomService(
     }
 
     @Transactional
-    fun accessRoom(playerId: String, pass: String): Either<ApplicationError, Room>{
-        val player = playerRepository.findById(playerId);
-        if(player.isEmpty){
+    fun accessRoom(userId: String, pass: String): Either<ApplicationError, Room>{
+        val user = userRepository.findById(userId);
+        if(user.isEmpty){
             logger.info("Entity Not Found")
             return Either.Left(ApplicationError.EntityNotFound)
         }
@@ -50,7 +50,7 @@ class RoomService(
             return Either.Left(ApplicationError.EntityNotFound)
         }
 
-        room.get().addPlayer(player.get()).getOrElse {
+        room.get().addUser(user.get()).getOrElse {
             logger.error(it.message)
             return Either.Left(ApplicationError.UnexpectedError)
         };

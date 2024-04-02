@@ -1,8 +1,7 @@
 package com.gui.top.trumps.core.game.infrastructure.entities
 
 import com.gui.top.trumps.core.game.domain.Match
-import com.gui.top.trumps.core.game.domain.Player
-import com.gui.top.trumps.game.domain.RoomStatus
+import com.gui.top.trumps.core.game.domain.RoomStatus
 import jakarta.persistence.*
 
 @Entity
@@ -15,11 +14,11 @@ data class RoomEntity(
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
     @JoinTable(
-        name = "ROOM_PLAYERS",
+        name = "ROOM_USERS",
         joinColumns = [JoinColumn(name = "ROOM_ID")],
-        inverseJoinColumns = [JoinColumn(name = "PLAYER_ID")]
+        inverseJoinColumns = [JoinColumn(name = "USER_ID")]
     )
-    val players: MutableSet<Player> = mutableSetOf(),
+    val users: MutableSet<UserEntity> = mutableSetOf(),
 
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
@@ -31,7 +30,7 @@ data class RoomEntity(
     @Column(name = "PASS")
     val pass: String,
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "MATCH_ID")
-    var match: Match? = null
+    val matchs: MutableList<MatchEntity> = mutableListOf()
 )

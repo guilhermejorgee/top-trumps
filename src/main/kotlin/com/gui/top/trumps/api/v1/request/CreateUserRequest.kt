@@ -2,7 +2,7 @@ package com.gui.top.trumps.api.v1.request
 
 import jakarta.validation.constraints.NotBlank
 
-data class RoomAccessRequest(
+data class CreateUserRequest(
     @field:NotBlank
-    val playerId: String
+    val name: String
 )

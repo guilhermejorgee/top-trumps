@@ -1,3 +1,11 @@
 package com.gui.top.trumps.api.v1.request
 
-data class RoomCreateRequest(val playerId: String, val slots: Int)
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+
+data class RoomCreateRequest(
+    @field:NotBlank
+    val playerId: String,
+    @field:NotNull
+    val slots: Int
+)

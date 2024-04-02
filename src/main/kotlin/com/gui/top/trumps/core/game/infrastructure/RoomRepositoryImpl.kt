@@ -3,9 +3,8 @@ package com.gui.top.trumps.core.game.infrastructure
 import com.gui.top.trumps.core.game.application.repository.RoomRepository
 import com.gui.top.trumps.core.game.infrastructure.entities.RoomEntity
 import com.gui.top.trumps.core.game.infrastructure.mapper.RoomMapper
-import com.gui.top.trumps.game.domain.Room
+import com.gui.top.trumps.core.game.domain.Room
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -38,6 +37,6 @@ class RoomRepositoryImpl(
 
 }
 
-interface RoomSpringRepository : JpaRepository<RoomEntity, String>, JpaSpecificationExecutor<RoomEntity> {
+interface RoomSpringRepository : JpaRepository<RoomEntity, String> {
     fun findByPass(pass: String): Optional<RoomEntity>
 }
