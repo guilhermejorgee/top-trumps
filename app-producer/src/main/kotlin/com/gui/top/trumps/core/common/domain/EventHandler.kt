@@ -12,7 +12,7 @@ class EventHandler(
     @Async
     @EventListener
     fun eventListener(event: Event){
-        eventDispatch.sent(event)
+        eventDispatch.send(event)
     }
 
 }
