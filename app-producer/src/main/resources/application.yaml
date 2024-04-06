@@ -25,9 +25,7 @@ spring:
         format_sql: false
   data:
     mongodb:
-      uri: mongodb://localhost/top-trumps
-      username: user
-      password: 1234
+      uri: mongodb://user:1234@localhost:27017/top-trumps?authSource=admin
   kafka:
     producer:
       bootstrap-servers: localhost:9092

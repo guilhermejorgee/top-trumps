@@ -10,4 +10,6 @@ sealed class DomainError(
     data object MatchNotExists : DomainError("The match does not exist in the room.")
     data object UnableDetermineWinner : DomainError("Unable to determine a winner.")
     data object UnableNextRound : DomainError("Unable to advance to the next round.")
+    data object InvalidNumberAttributes : DomainError("Card with invalid number of attributes.")
+    data object InvalidNumberCards : DomainError("Deck with invalid number of cards.")
 }

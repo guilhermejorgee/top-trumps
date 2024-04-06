@@ -4,7 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.gui.top.trumps.core.common.domain.Event
 
 data class RoomAddUserEvent(
-    val eventName: String = NameEvents.ADD_USER.name,
+    val eventName: String = "ADD_USER",
     val roomId: String,
     val roomPass: String,
     val roomStatus: String,

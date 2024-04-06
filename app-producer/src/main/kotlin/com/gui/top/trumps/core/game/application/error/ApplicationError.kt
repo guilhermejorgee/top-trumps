@@ -5,4 +5,5 @@ sealed class ApplicationError(
 ){
     data object EntityNotFound : ApplicationError("Entity was not found.")
     data object UnexpectedError : ApplicationError("An unexpected error occurred.")
+    data object UnprocessableEntity: ApplicationError("Was unable to process instructions")
 }

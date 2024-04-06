@@ -1,11 +1,13 @@
 package com.gui.top.trumps.api.v1
 
 import arrow.core.getOrElse
-import com.gui.top.trumps.api.v1.request.CreateUserRequest
-import com.gui.top.trumps.api.v1.request.RoomAccessRequest
-import com.gui.top.trumps.api.v1.request.RoomCreateRequest
+import com.gui.top.trumps.api.v1.request.*
+import com.gui.top.trumps.api.v1.response.CategoryCreateResponse
+import com.gui.top.trumps.api.v1.response.DeckCreateResponse
 import com.gui.top.trumps.api.v1.response.RoomCreateResponse
 import com.gui.top.trumps.api.v1.response.UserCreateResponse
+import com.gui.top.trumps.core.game.application.CategoryService
+import com.gui.top.trumps.core.game.application.DeckService
 import com.gui.top.trumps.core.game.application.RoomService
 import com.gui.top.trumps.core.game.application.UserService
 import com.gui.top.trumps.core.game.application.error.ApplicationError
@@ -19,7 +21,9 @@ import java.net.URI
 @RequestMapping("/top-trumps/v1")
 class GameController(
     private val roomService: RoomService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val deckService: DeckService,
+    private val categoryService: CategoryService
 ) {
 
     @PostMapping("/users")
@@ -54,10 +58,29 @@ class GameController(
         return ResponseEntity.noContent().build()
     }
 
+    @PostMapping("/decks")
+    fun createDeck(@RequestBody request: CreateDeckRequest): ResponseEntity<DeckCreateResponse>{
+        val deck = deckService.createDeck(request.name, request.categoryId, request.cards).getOrElse {
+            return responseError(it)
+        }
+
+        val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(deck.id).toUri()
+        return ResponseEntity.created(uri).body(DeckCreateResponse(deck.id, deck.name, deck.category.name))
+    }
+
+    @PostMapping("/categories")
+    fun createCategory(@RequestBody request: CreateCategoryRequest): ResponseEntity<CategoryCreateResponse> {
+        val category = categoryService.createCategory(request.name, request.description)
+        val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(category.id).toUri()
+        return ResponseEntity.created(uri).body(CategoryCreateResponse(category.id, category.name, category.description))
+    }
+
+
     fun <T> responseError(error: ApplicationError): ResponseEntity<T>{
         return when (error){
             is ApplicationError.EntityNotFound -> ResponseEntity.notFound().build()
             is ApplicationError.UnexpectedError -> ResponseEntity.badRequest().build()
+            is ApplicationError.UnprocessableEntity -> ResponseEntity.unprocessableEntity().build()
         }
     }
 

@@ -5,7 +5,7 @@ import com.gui.top.trumps.core.common.domain.Event
 import com.gui.top.trumps.core.game.domain.Player
 
 data class RoomFinishMatchEvent(
-    val eventName: String = NameEvents.FINISH_MATCH.name,
+    val eventName: String = "FINISH_MATCH",
     val roomId: String,
     val roomStatus: String,
     val roomPass: String,

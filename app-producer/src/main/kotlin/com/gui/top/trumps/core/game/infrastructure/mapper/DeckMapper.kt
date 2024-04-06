@@ -1,6 +1,5 @@
 package com.gui.top.trumps.core.game.infrastructure.mapper
 
-import com.github.f4b6a3.ulid.Ulid
 import com.gui.top.trumps.core.game.domain.Card
 import com.gui.top.trumps.core.game.domain.Category
 import com.gui.top.trumps.core.game.domain.Deck
@@ -14,7 +13,7 @@ class DeckMapper {
             return Deck(
                 id = deck.id,
                 name = deck.name,
-                category = Category(Ulid.from(deck.category.id), deck.category.name, deck.category.description),
+                category = Category(deck.category.id, deck.category.name, deck.category.description),
                 cards.map { Card(it.id, it.attributes) }.toSet()
             )
         }
