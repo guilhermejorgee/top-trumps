@@ -57,7 +57,7 @@ class RoomService(
         room.get().addUser(user.get()).getOrElse {
             logger.error(it.message)
             return Either.Left(ApplicationError.UnexpectedError)
-        };
+        }
 
         val roomPersisted = roomRepository.save(room.get())
 

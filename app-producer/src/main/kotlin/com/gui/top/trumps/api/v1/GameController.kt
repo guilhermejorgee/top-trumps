@@ -2,10 +2,7 @@ package com.gui.top.trumps.api.v1
 
 import arrow.core.getOrElse
 import com.gui.top.trumps.api.v1.request.*
-import com.gui.top.trumps.api.v1.response.CategoryCreateResponse
-import com.gui.top.trumps.api.v1.response.DeckCreateResponse
-import com.gui.top.trumps.api.v1.response.RoomCreateResponse
-import com.gui.top.trumps.api.v1.response.UserCreateResponse
+import com.gui.top.trumps.api.v1.response.*
 import com.gui.top.trumps.core.game.application.CategoryService
 import com.gui.top.trumps.core.game.application.DeckService
 import com.gui.top.trumps.core.game.application.RoomService
@@ -52,10 +49,10 @@ class GameController(
         @PathVariable roomPass: String,
         @RequestBody request: RoomAccessRequest
     ): ResponseEntity<Any>{
-        roomService.accessRoom(request.playerId, roomPass).getOrElse {
+        val room = roomService.accessRoom(request.playerId, roomPass).getOrElse {
             return responseError(it)
         }
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(RoomAccessResponse(room.id, room.users.map{ it.name }, room.status.name, room.slots, room.users.size - room.slots))
     }
 
     @PostMapping("/decks")
@@ -66,6 +63,14 @@ class GameController(
 
         val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(deck.id).toUri()
         return ResponseEntity.created(uri).body(DeckCreateResponse(deck.id, deck.name, deck.category.name))
+    }
+
+    @GetMapping("/decks/{deckId}")
+    fun getDeck(@PathVariable deckId: String): ResponseEntity<Any>{
+        val deck = deckService.getDeck(deckId).getOrElse {
+            return responseError(it)
+        }
+        return ResponseEntity.ok(DeckGetResponse(deck.id, deck.name, deck.category.name, deck.cards))
     }
 
     @PostMapping("/categories")

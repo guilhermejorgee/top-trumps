@@ -41,4 +41,14 @@ class DeckService(
         return Either.Right(deckPersisted)
     }
 
+    @Transactional(readOnly = true)
+    fun getDeck(deckId: String): Either<ApplicationError, Deck>{
+        val deck = repositoryDeck.findById(deckId)
+        if(deck.isEmpty){
+            logger.info("Entity Not Found")
+            Either.Left(ApplicationError.EntityNotFound)
+        }
+        return Either.Right(deck.get())
+    }
+
 }

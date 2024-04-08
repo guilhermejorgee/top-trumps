@@ -8,6 +8,8 @@ import com.gui.top.trumps.core.game.infrastructure.mapper.DeckMapper
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.interceptor.TransactionAspectSupport
+import java.lang.RuntimeException
 import java.util.*
 
 @Repository
@@ -22,6 +24,9 @@ class DeckRepositoryImpl(
             return Optional.empty()
         }
         val cards = repositoryMongoDb.findByDeckId(id)
+        if(cards.isEmpty()){
+            throw RuntimeException()
+        }
         val deck = DeckMapper.fromEntityToDomain(deckEntity.get(), cards)
 
         return Optional.of(deck);
@@ -29,12 +34,17 @@ class DeckRepositoryImpl(
     }
 
     override fun save(deck: Deck): Deck {
-        val deckEntities = DeckMapper.fromDomainToEntities(deck)
-        repositoryJpa.save(deckEntities.deck)
-        if(deckEntities.card.isNotEmpty()){
-            repositoryMongoDb.saveAll(deckEntities.card)
+        try {
+            val deckEntities = DeckMapper.fromDomainToEntities(deck)
+            repositoryJpa.save(deckEntities.deck)
+            if(deckEntities.card.isNotEmpty()){
+                repositoryMongoDb.saveAll(deckEntities.card)
+            }
+            return deck
+        }catch (ex: Exception){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw ex
         }
-        return deck
     }
 
 }

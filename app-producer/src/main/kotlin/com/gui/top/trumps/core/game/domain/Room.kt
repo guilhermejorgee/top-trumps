@@ -28,11 +28,10 @@ class Room(
     fun addUser(user: User): Either<DomainError, Room> {
         return when {
             users.contains(user) -> Either.Left(DomainError.PlayerAlreadyInRoom)
-            slots == 0 -> Either.Left(DomainError.FullRoom)
+            users.size == slots -> Either.Left(DomainError.FullRoom)
             else -> {
                 users.add(user)
-                slots--
-                if (this.slots == 0) this.status = RoomStatus.READY_TO_START
+                if (users.size == slots) this.status = RoomStatus.READY_TO_START
                 this.addEvents(RoomAddUserEvent(
                     roomId = id,
                     roomStatus = status.name,
