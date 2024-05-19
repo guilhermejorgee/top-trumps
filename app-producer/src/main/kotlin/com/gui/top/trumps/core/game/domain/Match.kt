@@ -47,8 +47,8 @@ class Match(
     }
 
     companion object {
-        fun create(players: Set<User>, roomId: String, deck: Deck): Match {
-            val playersWithCards = distributeCards(deck, players)
+        fun create(users: Set<User>, roomId: String, deck: Deck): Match {
+            val playersWithCards = distributeCards(deck, users)
             return Match(
                 id = UlidCreator.getUlid().toString(),
                 players = playersWithCards,

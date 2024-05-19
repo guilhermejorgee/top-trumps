@@ -26,7 +26,6 @@ class RoomRepositoryImpl(
         }
         return Optional.empty()
     }
-
     override fun findById(idRoom: String): Optional<Room> {
         val roomEntity = repository.findById(idRoom)
         if(roomEntity.isPresent){

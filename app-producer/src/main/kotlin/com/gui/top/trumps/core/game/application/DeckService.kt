@@ -8,19 +8,13 @@ import com.gui.top.trumps.core.game.application.error.ApplicationError
 import com.gui.top.trumps.core.game.application.repository.CategoryRepository
 import com.gui.top.trumps.core.game.application.repository.DeckRepository
 import com.gui.top.trumps.core.game.domain.Deck
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
-@Service
 class DeckService(
     private val repositoryDeck: DeckRepository,
     private val repositoryCategory: CategoryRepository,
     private val eventManager: EventManager
 ): Loggable {
 
-    @Transactional
     fun createDeck(name: String, categoryId: String, cardsAttributes: List<Map<String,String>>): Either<ApplicationError, Deck>{
 
         val category = repositoryCategory.findById(categoryId)
@@ -41,7 +35,6 @@ class DeckService(
         return Either.Right(deckPersisted)
     }
 
-    @Transactional(readOnly = true)
     fun getDeck(deckId: String): Either<ApplicationError, Deck>{
         val deck = repositoryDeck.findById(deckId)
         if(deck.isEmpty){

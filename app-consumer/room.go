@@ -11,25 +11,28 @@ type Room struct {
 	mu       sync.Mutex
 }
 
-var (
-	rooms      = make(map[string]*Room)
-	roomsMutex = sync.Mutex{}
-)
+type RoomManager struct {
+	rooms map[string]*Room
+	mu    sync.Mutex
+}
 
-func getRoom(roomPass string) *Room {
-	roomsMutex.Lock()
-	defer roomsMutex.Unlock()
-	room, exists := rooms[roomPass]
+var roomManager = &RoomManager{
+	rooms: make(map[string]*Room),
+}
+
+func (rm *RoomManager) getRoom(roomPass string) *Room {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+	room, exists := rm.rooms[roomPass]
 	if !exists {
 		room = &Room{
 			roomPass: roomPass,
 			clients:  make(map[chan string]struct{}),
 		}
-		rooms[roomPass] = room
+		rm.rooms[roomPass] = room
 	}
 	return room
 }
-
 
 func (r *Room) sendMessage(msg string) {
 	r.mu.Lock()
@@ -41,16 +44,24 @@ func (r *Room) sendMessage(msg string) {
 			log.Println("Channel might be full. Skipping.")
 		}
 	}
+	log.Printf("Sent message to all clients in room %s: %s", r.roomPass, msg)
 }
 
-func (r *Room) addClient(clientChan chan string) {
+func (r *Room) addClient(clientChan chan string, playerID string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.clients[clientChan] = struct{}{}
+	log.Printf("Player %s added to room %s", playerID, r.roomPass)
 }
 
 func (r *Room) removeClient(clientChan chan string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	delete(r.clients, clientChan)
+	close(clientChan)
+	log.Printf("Client removed from room %s", r.roomPass)
+}
+
+func getRoom(roomPass string) *Room {
+	return roomManager.getRoom(roomPass)
 }

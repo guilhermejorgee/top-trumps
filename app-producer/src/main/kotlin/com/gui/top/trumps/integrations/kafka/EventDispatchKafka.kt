@@ -17,6 +17,7 @@ class EventDispatchKafka(
     private lateinit var TOPIC_NAME: String
 
     override fun send(event: Event) {
+        println(event.toJson())
         template.send(TOPIC_NAME, event.toJson())
     }
 }

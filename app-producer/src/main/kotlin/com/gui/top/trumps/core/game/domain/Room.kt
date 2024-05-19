@@ -18,7 +18,7 @@ class Room(
     val id: String,
     val users: MutableSet<User>,
     var status: RoomStatus,
-    var slots: Int,
+    val slots: Int,
     val pass: String,
     val matchs: MutableList<Match>
 ): AggregateRoot {

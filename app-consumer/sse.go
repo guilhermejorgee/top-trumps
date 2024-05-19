@@ -11,14 +11,15 @@ func sseHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Connection", "keep-alive")
 
 	roomPass := r.URL.Query().Get("roomPass")
-	if roomPass == "" {
-		http.Error(w, "RoomPass is required", http.StatusBadRequest)
+	playerID := r.URL.Query().Get("playerID")
+	if roomPass == "" || playerID == "" {
+		http.Error(w, "RoomPass and PlayerID are required", http.StatusBadRequest)
 		return
 	}
 
 	clientChan := make(chan string)
 	room := getRoom(roomPass)
-	room.addClient(clientChan)
+	room.addClient(clientChan, playerID)
 	defer room.removeClient(clientChan)
 
 	flusher, ok := w.(http.Flusher)

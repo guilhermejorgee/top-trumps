@@ -3,11 +3,9 @@ package com.gui.top.trumps.api.v1
 import arrow.core.getOrElse
 import com.gui.top.trumps.api.v1.request.*
 import com.gui.top.trumps.api.v1.response.*
-import com.gui.top.trumps.core.game.application.CategoryService
-import com.gui.top.trumps.core.game.application.DeckService
-import com.gui.top.trumps.core.game.application.RoomService
-import com.gui.top.trumps.core.game.application.UserService
+import com.gui.top.trumps.core.game.application.*
 import com.gui.top.trumps.core.game.application.error.ApplicationError
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -20,23 +18,22 @@ class GameController(
     private val roomService: RoomService,
     private val userService: UserService,
     private val deckService: DeckService,
+    private val matchService: MatchService,
     private val categoryService: CategoryService
 ) {
 
     @PostMapping("/users")
-    fun createUser(@RequestBody request: CreateUserRequest): ResponseEntity<UserCreateResponse>{
+    fun createUser(@RequestBody @Valid request: CreateUserRequest): ResponseEntity<UserCreateResponse>{
         val user = userService.createUser(request.name)
             .getOrElse {
                 return responseError(it)
             }
-
         val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.id).toUri()
-
         return ResponseEntity.created(uri).body(UserCreateResponse(user.id, user.name))
     }
 
     @PostMapping("/rooms")
-    fun createRoom(@RequestBody request: RoomCreateRequest): ResponseEntity<RoomCreateResponse>{
+    fun createRoom(@RequestBody @Valid request: RoomCreateRequest): ResponseEntity<RoomCreateResponse>{
         val room = roomService.createRoom(request.playerId, request.slots).getOrElse {
             return responseError(it)
         }
@@ -47,7 +44,7 @@ class GameController(
     @PatchMapping("/rooms/{roomPass}/access")
     fun accessRoom(
         @PathVariable roomPass: String,
-        @RequestBody request: RoomAccessRequest
+        @RequestBody @Valid request: RoomAccessRequest
     ): ResponseEntity<Any>{
         val room = roomService.accessRoom(request.playerId, roomPass).getOrElse {
             return responseError(it)
@@ -56,7 +53,7 @@ class GameController(
     }
 
     @PostMapping("/decks")
-    fun createDeck(@RequestBody request: CreateDeckRequest): ResponseEntity<DeckCreateResponse>{
+    fun createDeck(@RequestBody @Valid request: CreateDeckRequest): ResponseEntity<DeckCreateResponse>{
         val deck = deckService.createDeck(request.name, request.categoryId, request.cards).getOrElse {
             return responseError(it)
         }
@@ -74,11 +71,25 @@ class GameController(
     }
 
     @PostMapping("/categories")
-    fun createCategory(@RequestBody request: CreateCategoryRequest): ResponseEntity<CategoryCreateResponse> {
+    fun createCategory(@RequestBody @Valid request: CreateCategoryRequest): ResponseEntity<CategoryCreateResponse> {
         val category = categoryService.createCategory(request.name, request.description)
         val uri: URI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(category.id).toUri()
         return ResponseEntity.created(uri).body(CategoryCreateResponse(category.id, category.name, category.description))
     }
+
+    // return through events
+
+    @PostMapping("/rooms/{roomId}/match")
+    fun createRoomMatch(
+        @PathVariable roomId: String,
+        @RequestBody @Valid request: RoomCreateMatchRequest
+    ): ResponseEntity<Any>{
+        matchService.createMatch(roomId, request.deckId).getOrElse {
+            return responseError(it)
+        }
+        return ResponseEntity.noContent().build()
+    }
+
 
 
     fun <T> responseError(error: ApplicationError): ResponseEntity<T>{

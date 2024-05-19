@@ -5,9 +5,7 @@ import com.gui.top.trumps.core.common.application.Loggable
 import com.gui.top.trumps.core.game.application.error.ApplicationError
 import com.gui.top.trumps.core.game.application.repository.UserRepository
 import com.gui.top.trumps.core.game.domain.User
-import org.springframework.stereotype.Service
 
-@Service
 class UserService(
     private val userRepository: UserRepository
 ): Loggable {
