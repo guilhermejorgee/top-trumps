@@ -8,7 +8,7 @@ class RoomMapper {
         fun fromEntityToDomain(roomEntity: RoomEntity): Room {
             return Room(
                 id = roomEntity.id,
-                users = roomEntity.users.map(UserMapper::fromEntityToDomain).toMutableSet(),
+                users = roomEntity.users.map { UserMapper.fromEntityToDomain(it) }.toMutableSet(),
                 status = roomEntity.status,
                 slots = roomEntity.slots,
                 pass = roomEntity.pass,

@@ -27,7 +27,7 @@ data class MatchEntity(
     @Column(name = "WINNER")
     var winner: String? = null,
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinTable(
         name = "MATCH_PLAYERS",
         joinColumns = [JoinColumn(name = "MATCH_ID")],

@@ -5,6 +5,7 @@ import com.gui.top.trumps.api.v1.request.*
 import com.gui.top.trumps.api.v1.response.*
 import com.gui.top.trumps.core.game.application.*
 import com.gui.top.trumps.core.game.application.error.ApplicationError
+import com.gui.top.trumps.core.game.application.inputs.PlayerNewCardsInput
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -85,6 +86,18 @@ class GameController(
         @RequestBody @Valid request: RoomCreateMatchRequest
     ): ResponseEntity<Any>{
         matchService.createMatch(roomId, request.deckId).getOrElse {
+            return responseError(it)
+        }
+        return ResponseEntity.noContent().build()
+    }
+
+    @PatchMapping("/rooms/{roomId}/match/{matchId}")
+    fun matchNewRound(
+        @PathVariable roomId: String,
+        @PathVariable matchId: String,
+        @RequestBody @Valid request: List<MatchNewRoundRequest>
+    ): ResponseEntity<Any>{
+        matchService.newMatchRound(roomId, matchId, request.map { PlayerNewCardsInput(it.id, it.cardsId) }).getOrElse {
             return responseError(it)
         }
         return ResponseEntity.noContent().build()
