@@ -14,6 +14,6 @@ data class PlayerEntity(
     @Column(name = "MATCH_ID")
     val matchId: String,
     @Convert(converter = StringListConverter::class)
-    @Column(name = "CARDS")
+    @Column(name = "CARDS", columnDefinition = "TEXT")
     val cardsId: List<String>
 )
